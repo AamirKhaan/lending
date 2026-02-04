@@ -5,14 +5,16 @@ app_description = "Open Source Lending software"
 app_email = "contact@frappe.io"
 app_license = "GNU General Public License (v3)"
 required_apps = ["erpnext"]
-app_logo_url = "/assets/lending/images/frappe-lending-logo.svg"
+app_logo_url = "/assets/lending/icons/frappe-lending-logo.svg"
+app_home = "/desk/lending"
+
 
 add_to_apps_screen = [
 	{
 		"name": "lending",
-		"logo": "/assets/lending/images/frappe-lending-logo.svg",
+		"logo": "/assets/lending/icons/frappe-lending-logo.svg",
 		"title": "Lending",
-		"route": "/app/lending",
+		"route": "/desk/lending",
 		"has_permission": "lending.utils.check_app_permission",
 	}
 ]
@@ -39,7 +41,17 @@ export_python_type_annotations = True
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/lending/css/lending.css"
-app_include_js = "lending.bundle.js"
+# app_include_js = "lending.bundle.js"
+
+# Includes in <head>
+# ------------------
+
+# include js, css files in header of desk.html
+# app_include_css = "/assets/lending/css/lending.css"
+app_include_js = [
+	"lending.bundle.js",
+]
+# app_include_css = "lending.bundle.css"
 
 # fixtures
 fixtures = [

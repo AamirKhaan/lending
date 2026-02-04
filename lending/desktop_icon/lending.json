@@ -1,0 +1,19 @@
+{
+    "app": "lending",
+    "creation": "2025-11-17 20:33:43.167514",
+    "docstatus": 0,
+    "doctype": "Desktop Icon",
+    "hidden": 0,
+    "icon_type": "App",
+    "idx": 15,
+    "label": "Lending",
+    "link": "/desk/lending",
+    "link_type": "External",
+    "logo_url": "/assets/lending/icons/frappe-lending-logo.svg",
+    "modified": "2026-01-09 17:29:44.070361",
+    "modified_by": "Administrator",
+    "name": "Lending",
+    "owner": "Administrator",
+    "roles": [],
+    "standard": 1
+}
