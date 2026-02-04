@@ -1,3 +1,5 @@
+import json
+
 import frappe
 from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 from frappe.custom.doctype.property_setter.property_setter import make_property_setter
@@ -39,17 +41,25 @@ LOAN_CUSTOM_FIELDS = {
 		},
 	],
 	"Company": [
+		# Lending tab + all fields are placed after Stock tab and before Dashboard tab
+		# (insert_after "default_scrap_warehouse" = last field of Stock tab in standard Company)
 		{
 			"fieldname": "loan_tab",
 			"fieldtype": "Tab Break",
 			"label": "Lending",
-			"insert_after": "default_in_transit_warehouse",
+			"insert_after": "default_scrap_warehouse",
 		},
 		{
 			"fieldname": "loan_settings",
 			"label": "Loan Settings",
 			"fieldtype": "Section Break",
 			"insert_after": "loan_tab",
+		},
+		{
+			"fieldname": "enable_loan_accounting",
+			"label": "Enable Loan Accounting",
+			"fieldtype": "Check",
+			"insert_after": "loan_settings",
 		},
 		{
 			"fieldname": "loan_restructure_limit",
@@ -89,18 +99,13 @@ LOAN_CUSTOM_FIELDS = {
 			"fieldtype": "Column Break",
 			"insert_after": "loan_accrual_frequency",
 		},
-		{
-			"fieldname": "enable_loan_accounting",
-			"label": "Enable Loan Accounting",
-			"fieldtype": "Check",
-			"insert_after": "loan_column_break",
-		},
+		
 		{
 			"fieldname": "collection_offset_logic_based_on",
 			"label": "Collection Offset Logic Based On",
 			"fieldtype": "Select",
 			"options": "NPA Flag\nDays Past Due",
-			"insert_after": "enable_loan_accounting",
+			"insert_after": "loan_column_break",
 		},
 		{
 			"fieldname": "days_past_due_threshold",
@@ -256,6 +261,39 @@ LOAN_CUSTOM_FIELDS = {
 }
 
 
+def move_dashboard_tab_to_end(doctype):
+	"""If the doctype has a dashboard_tab field, set field_order so it appears last."""
+	frappe.clear_cache(doctype=doctype)
+	meta = frappe.get_meta(doctype, cached=False)
+	if "dashboard_tab" not in meta._fields:
+		return
+	field_order = [f.fieldname for f in meta.fields]
+	if "dashboard_tab" not in field_order:
+		return
+	field_order.remove("dashboard_tab")
+	field_order.append("dashboard_tab")
+	frappe.db.delete(
+		"Property Setter",
+		{"doc_type": doctype, "property": "field_order"},
+	)
+	make_property_setter(
+		doctype,
+		"",
+		"field_order",
+		json.dumps(field_order),
+		"JSON",
+		for_doctype=True,
+		validate_fields_for_doctype=False,
+	)
+	frappe.clear_cache(doctype=doctype)
+
+
+def move_dashboard_tab_to_end_for_doctypes():
+	"""Ensure Dashboard Tab is last in all doctypes we add custom fields to."""
+	for doctype in list(LOAN_CUSTOM_FIELDS.keys()):
+		move_dashboard_tab_to_end(doctype)
+
+
 def make_property_setter_for_journal_entry():
 	property_setter = frappe.db.get_value(
 		"Property Setter",
@@ -288,6 +326,7 @@ def make_property_setter_for_journal_entry():
 
 def after_install():
 	create_custom_fields(LOAN_CUSTOM_FIELDS, ignore_validate=True)
+	move_dashboard_tab_to_end_for_doctypes()
 	make_property_setter_for_journal_entry()
 
 
