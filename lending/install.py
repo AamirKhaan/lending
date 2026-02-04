@@ -7,11 +7,17 @@ from frappe.custom.doctype.property_setter.property_setter import make_property_
 LOAN_CUSTOM_FIELDS = {
 	"Sales Invoice": [
 		{
+			"fieldname": "loan_details_tab",
+			"label": "Loan Details",
+			"fieldtype": "Tab Break",
+			"insert_after": "remarks",
+		},
+		{
 			"fieldname": "loan",
 			"label": "Loan",
 			"fieldtype": "Link",
 			"options": "Loan",
-			"insert_after": "customer",
+			"insert_after": "loan_details_tab",
 			"print_hide": 1,
 		},
 		{
